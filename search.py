@@ -18,6 +18,7 @@ Pacman agents (in searchAgents.py).
 """
 
 import util
+import heapq
 
 class SearchProblem:
     """
@@ -87,7 +88,26 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    stack = util.Stack()
+    visited = set()
+    stack.push((problem.getStartState(), []))
+    visited.add(problem.getStartState())
+    while not stack.isEmpty():
+        x = stack.pop()
+        current_node = x[0]
+        current_edge = x[1]
+
+        if problem.isGoalState(current_node):
+            return current_edge
+
+        for successor in problem.getSuccessors(current_node):
+            next_node = successor[0]
+            next_edge = successor[1]
+            if next_node not in visited:
+                stack.push((next_node, current_edge + [next_edge]))
+                visited.add(next_node)
+
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
@@ -97,7 +117,27 @@ def breadthFirstSearch(problem):
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    queue = util.PriorityQueue()
+    visited = set()
+    queue.push((problem.getStartState(), []), 0)
+    queue.push(problem.getStartState())
+
+    while not queue.isEmpty():
+        x = queue.pop()
+        current_node = x[0]
+        current_edge = x[1]
+
+        if problem.isGoalState(current_node):
+            return current_edge
+
+        for successor in problem.getSuccessors(current_node):
+            next_node = successor[0]
+            next_edge = successor[1]
+            if next_node not in visited:
+                queue.update((next_node, current_edge + [next_edge]), problem.getCostOfActions(current_edge + [next_edge]))
+                visited.add(current_node)
+
 
 def nullHeuristic(state, problem=None):
     """
