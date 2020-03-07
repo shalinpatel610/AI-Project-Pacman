@@ -113,7 +113,25 @@ def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
 
-    #util.raiseNotDefined()
+    queue = util.Queue()
+    visited = set()
+    queue.push((problem.getStartState(), []))
+    visited.add(problem.getStartState())
+    while not queue.isEmpty():
+        x = queue.pop()
+        current_node = x[0]
+        current_edge = x[1]
+
+        if problem.isGoalState(current_node):
+            return current_edge
+
+        for successor in problem.getSuccessors(current_node):
+            next_node = successor[0]
+            next_edge = successor[1]
+            if next_node not in visited:
+                queue.push((next_node, current_edge + [next_edge]))
+                visited.add(next_node)
+
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
@@ -151,30 +169,24 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
 
-    fringe = util.PriorityQueue()  # Fringe (Priority Queue) to store the nodes along with their paths
-    visited_nodes = set()  # A set to maintain all the visited nodes
-    fringe.push((problem.getStartState(), [], 0), heuristic(problem.getStartState(), problem) + 0)  # Pushing (Node, [Path from start-node till 'Node'], Culmulative backward cost till 'Node') to the fringe. In this case, we are using the sum of culmulative backward cost and the heutristic of the node as a factor based on which priority is decided.
-    while True:
-        popped_element = fringe.pop()
-        node = popped_element[0]
-        path_till_node = popped_element[1]
-        cost_till_node = popped_element[2]
-        if problem.isGoalState(node):  # Exit on encountering goal node
-            break
-        else:
-            if node not in visited_nodes:  # Skipping already visited nodes
-                visited_nodes.add(node)  # Adding newly encountered nodes to the set of visited nodes
-                successors = problem.getSuccessors(node)
-                for successor in successors:
-                    child_node = successor[0]
-                    child_path = successor[1]
-                    child_cost = successor[2]
-                    full_path = path_till_node + [child_path]  # Computing path of child node from start node
-                    full_cost = cost_till_node + child_cost  # Computing culmulative backward cost of child node from start node
-                    fringe.update((child_node, full_path, full_cost), full_cost + heuristic(child_node, problem))  # Pushing (Node, [Path], Culmulative backward cost) to the fringe.
+    queue = util.PriorityQueue()
+    visited = set()
+    queue.push((problem.getStartState(), [], 0), heuristic(problem.getStartState(), problem) + 0)
 
-    return path_till_node
+    while not queue.isEmpty():
+        x = queue.pop()
+        current_node = x[0]
+        current_edge = x[1]
 
+        if problem.isGoalState(current_node):
+            return current_edge
+
+        for successor in problem.getSuccessors(current_node):
+            next_node = successor[0]
+            next_edge = successor[1]
+            if next_node not in visited:
+                queue.update((next_node, current_edge + [next_edge]), problem.getCostOfActions(current_edge + [next_edge]) + heuristic(next_node, problem))
+                visited.add(current_node)
 
 # Abbreviations
 bfs = breadthFirstSearch
