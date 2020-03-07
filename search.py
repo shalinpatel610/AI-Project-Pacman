@@ -92,7 +92,8 @@ def depthFirstSearch(problem):
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    #util.raiseNotDefined()
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
@@ -109,7 +110,30 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    fringe = util.PriorityQueue()  # Fringe (Priority Queue) to store the nodes along with their paths
+    visited_nodes = set()  # A set to maintain all the visited nodes
+    fringe.push((problem.getStartState(), [], 0), heuristic(problem.getStartState(), problem) + 0)  # Pushing (Node, [Path from start-node till 'Node'], Culmulative backward cost till 'Node') to the fringe. In this case, we are using the sum of culmulative backward cost and the heutristic of the node as a factor based on which priority is decided.
+    while True:
+        popped_element = fringe.pop()
+        node = popped_element[0]
+        path_till_node = popped_element[1]
+        cost_till_node = popped_element[2]
+        if problem.isGoalState(node):  # Exit on encountering goal node
+            break
+        else:
+            if node not in visited_nodes:  # Skipping already visited nodes
+                visited_nodes.add(node)  # Adding newly encountered nodes to the set of visited nodes
+                successors = problem.getSuccessors(node)
+                for successor in successors:
+                    child_node = successor[0]
+                    child_path = successor[1]
+                    child_cost = successor[2]
+                    full_path = path_till_node + [child_path]  # Computing path of child node from start node
+                    full_cost = cost_till_node + child_cost  # Computing culmulative backward cost of child node from start node
+                    fringe.update((child_node, full_path, full_cost), full_cost + heuristic(child_node, problem))  # Pushing (Node, [Path], Culmulative backward cost) to the fringe.
+
+    return path_till_node
 
 
 # Abbreviations
