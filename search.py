@@ -181,12 +181,13 @@ def aStarSearch(problem, heuristic=nullHeuristic):
         if problem.isGoalState(current_node):
             return current_edge
 
-        for successor in problem.getSuccessors(current_node):
-            next_node = successor[0]
-            next_edge = successor[1]
-            if next_node not in visited:
+        if current_node not in visited:
+            visited.add(current_node)
+            for successor in problem.getSuccessors(current_node):
+                next_node = successor[0]
+                next_edge = successor[1]
                 queue.update((next_node, current_edge + [next_edge]), problem.getCostOfActions(current_edge + [next_edge]) + heuristic(next_node, problem))
-                visited.add(current_node)
+
 
 # Abbreviations
 bfs = breadthFirstSearch
