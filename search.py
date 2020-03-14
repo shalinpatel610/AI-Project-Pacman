@@ -110,7 +110,26 @@ def depthFirstSearch(problem):
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    queue = util.Queue()
+    visited = set()
+    queue.push((problem.getStartState(), []))
+    visited.add(problem.getStartState())
+    while not queue.isEmpty():
+        x = queue.pop()
+        current_node = x[0]
+        current_edge = x[1]
+
+        if problem.isGoalState(current_node):
+            return current_edge
+
+        for successor in problem.getSuccessors(current_node):
+            next_node = successor[0]
+            next_edge = successor[1]
+            if next_node not in visited:
+                queue.push((next_node, current_edge + [next_edge]))
+                visited.add(next_node)
+
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
@@ -147,7 +166,25 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    queue = util.PriorityQueue()
+    visited = set()
+    queue.push((problem.getStartState(), [], 0), heuristic(problem.getStartState(), problem) + 0)
+
+    while not queue.isEmpty():
+        x = queue.pop()
+        current_node = x[0]
+        current_edge = x[1]
+
+        if problem.isGoalState(current_node):
+            return current_edge
+
+        if current_node not in visited:
+            visited.add(current_node)
+            for successor in problem.getSuccessors(current_node):
+                next_node = successor[0]
+                next_edge = successor[1]
+                queue.update((next_node, current_edge + [next_edge]), problem.getCostOfActions(current_edge + [next_edge]) + heuristic(next_node, problem))
 
 
 # Abbreviations
