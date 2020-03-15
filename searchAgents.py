@@ -332,14 +332,18 @@ class CornersProblem(search.SearchProblem):
             hitsWall = self.walls[nextx][nexty]
 
             corners_left = state[1]
+
+            # check if next points are in corner position
             if (nextx, nexty) in corners_left:
                 for i in range(len(corners_left)):
                     if corners_left[i] == (nextx, nexty):
                         break
                 corners_left = corners_left[:i] + corners_left[i + 1:]
+
+            # check if they are not hitting the walls, take the next state and add to the successor
             if not hitsWall:
-                nextState = ((nextx, nexty), corners_left)
                 cost = 1
+                nextState = ((nextx, nexty), corners_left)
                 successors.append((nextState, action, cost))
 
         self._expanded += 1 # DO NOT CHANGE
@@ -381,13 +385,12 @@ def cornersHeuristic(state, problem):
     distance = 0
 
     if len(corners_left) > 0:
-        closest = 0
-        min_distance = 0
-
         corners_list = []
+        # add all the corners left in the corner list
         for i in range(len(corners_left)):
             corner = corners_left[i]
             corners_list.append(util.manhattanDistance(state[0], corner))
+        # take the closet and remove from the corners left
         min_distance = min(corners_list)
         closest = corners_left[corners_list.index(min_distance)]
         corners_left.remove(closest)
@@ -395,6 +398,7 @@ def cornersHeuristic(state, problem):
         while len(corners_left) > 0:
             distance_list = []
             xy1 = closest
+            # check the minimum distance along with all the corners left
             for i in range(len(corners_left)):
                 xy2 = corners_left[i]
                 distance_list.append(util.manhattanDistance(xy1, xy2))
