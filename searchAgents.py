@@ -331,14 +331,14 @@ class CornersProblem(search.SearchProblem):
             nextx, nexty = int(x + dx), int(y + dy)
             hitsWall = self.walls[nextx][nexty]
 
-            cornersLeft = state[1]
-            if (nextx, nexty) in cornersLeft:
-                for i in range(len(cornersLeft)):
-                    if cornersLeft[i] == (nextx, nexty):
+            corners_left = state[1]
+            if (nextx, nexty) in corners_left:
+                for i in range(len(corners_left)):
+                    if corners_left[i] == (nextx, nexty):
                         break
-                cornersLeft = cornersLeft[:i] + cornersLeft[i + 1:]
+                corners_left = corners_left[:i] + corners_left[i + 1:]
             if not hitsWall:
-                nextState = ((nextx, nexty), cornersLeft)
+                nextState = ((nextx, nexty), corners_left)
                 cost = 1
                 successors.append((nextState, action, cost))
 
@@ -376,7 +376,36 @@ def cornersHeuristic(state, problem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+
+    corners_left = list(state[1])
+    distance = 0
+
+    if len(corners_left) > 0:
+        closest = 0
+        min_distance = 0
+
+        corners_list = []
+        for i in range(len(corners_left)):
+            corner = corners_left[i]
+            corners_list.append(util.manhattanDistance(state[0], corner))
+        min_distance = min(corners_list)
+        closest = corners_left[corners_list.index(min_distance)]
+        corners_left.remove(closest)
+
+        while len(corners_left) > 0:
+            distance_list = []
+            xy1 = closest
+            for i in range(len(corners_left)):
+                xy2 = corners_left[i]
+                distance_list.append(util.manhattanDistance(xy1, xy2))
+            closest2 = min(distance_list)
+            closest = corners_left[distance_list.index(closest2)]
+            corners_left.remove(closest)
+            distance = distance + closest2
+
+        distance = min_distance + distance
+
+    return distance
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
