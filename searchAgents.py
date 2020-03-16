@@ -148,7 +148,7 @@ class PositionSearchProblem(search.SearchProblem):
         """
         Stores the start and goal.
 
-        gameState: A GameState object (pacman.py)
+        gameState : A GameState object (pacman.py)
         costFn: A function from a search state (tuple) to a non-negative number
         goal: A position in the gameState
         """
@@ -472,6 +472,8 @@ def foodHeuristic(state, problem):
     "*** YOUR CODE HERE ***"
 
     heuristic = 0
+    # For each food position in the list of food grid, calculate maze distances towards the
+    # current position. The maximum of these would be the farthest food point.
     for pos in foodGrid.asList():
         maze_dist = mazeDistance(position, pos, problem.startingGameState)
         if maze_dist > heuristic:
@@ -506,8 +508,8 @@ class ClosestDotSearchAgent(SearchAgent):
         walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState)
 
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        path = search.breadthFirstSearch(problem)  # Bfs finds closest food first.
+        return path # return actions to reach food
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -542,8 +544,8 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         """
         x,y = state
 
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # Goal is reached if the food position list contains the current state
+        return state in self.food.asList()
 
 def mazeDistance(point1, point2, gameState):
     """
