@@ -331,19 +331,19 @@ class CornersProblem(search.SearchProblem):
             nextx, nexty = int(x + dx), int(y + dy)
             hitsWall = self.walls[nextx][nexty]
 
-            corners_left = state[1]
+            corners = state[1]
 
             # check if next points are in corner position
-            if (nextx, nexty) in corners_left:
-                for i in range(len(corners_left)):
-                    if corners_left[i] == (nextx, nexty):
+            if (nextx, nexty) in corners:
+                for i in range(len(corners)):
+                    if corners[i] == (nextx, nexty):
                         break
-                corners_left = corners_left[:i] + corners_left[i + 1:]
+                corners = corners[:i] + corners[i + 1:]
 
             # check if they are not hitting the walls, take the next state and add to the successor
             if not hitsWall:
                 cost = 1
-                nextState = ((nextx, nexty), corners_left)
+                nextState = ((nextx, nexty), corners)
                 successors.append((nextState, action, cost))
 
         self._expanded += 1 # DO NOT CHANGE
@@ -381,30 +381,30 @@ def cornersHeuristic(state, problem):
 
     "*** YOUR CODE HERE ***"
 
-    corners_left = list(state[1])
+    corners = list(state[1])
     distance = 0
 
-    if len(corners_left) > 0:
+    if len(corners) > 0:
         corners_list = []
         # add all the corners left in the corner list
-        for i in range(len(corners_left)):
-            corner = corners_left[i]
+        for i in range(len(corners)):
+            corner = corners[i]
             corners_list.append(util.manhattanDistance(state[0], corner))
         # take the closet and remove from the corners left
         min_distance = min(corners_list)
-        closest = corners_left[corners_list.index(min_distance)]
-        corners_left.remove(closest)
+        closest = corners[corners_list.index(min_distance)]
+        corners.remove(closest)
 
-        while len(corners_left) > 0:
+        while len(corners) > 0:
             distance_list = []
             xy1 = closest
             # check the minimum distance along with all the corners left
-            for i in range(len(corners_left)):
-                xy2 = corners_left[i]
+            for i in range(len(corners)):
+                xy2 = corners[i]
                 distance_list.append(util.manhattanDistance(xy1, xy2))
             closest2 = min(distance_list)
-            closest = corners_left[distance_list.index(closest2)]
-            corners_left.remove(closest)
+            closest = corners[distance_list.index(closest2)]
+            corners.remove(closest)
             distance = distance + closest2
 
         distance = min_distance + distance
